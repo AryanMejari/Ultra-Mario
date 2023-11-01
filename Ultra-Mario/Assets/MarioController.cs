@@ -1,43 +1,39 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
-public class MarioController : MonoBehaviour
+public class CharacterController : MonoBehaviour
 {
     public float moveSpeed = 5f;
+    public float jumpForce = 10f; // Adjust the jump force as needed
     private Rigidbody2D rb;
 
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        rb.freezeRotation = true; // Prevent Mario from going upside down
     }
 
     private void Update()
     {
-        Move();
+        // Get horizontal input (left and right arrow keys or A/D keys)
+        float horizontalInput = Input.GetAxis("Horizontal");
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        // Calculate the movement vector
+        Vector2 movement = new Vector2(horizontalInput * moveSpeed, rb.velocity.y);
+
+        // Apply the movement to the Rigidbody
+        rb.velocity = movement;
+
+        // Check for a jump input (space bar)
+        if (Input.GetButtonDown("Jump"))
         {
             Jump();
         }
     }
 
-    private void Move()
-    {
-        float horizontalInput = Input.GetAxis("Horizontal");
-        Vector2 movement = new Vector2(horizontalInput * moveSpeed, rb.velocity.y);
-        rb.velocity = movement;
-    }
-
     private void Jump()
     {
+        // Apply an upward force to perform a jump
         rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
-    }
-
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.gameObject.CompareTag("Ground"))
-        {
-            // Reset jump state
-        }
     }
 }
