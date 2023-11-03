@@ -2,30 +2,24 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CharacterController : MonoBehaviour
+public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private float jumpForce = 10f;
-    [SerializeField] private float moveSpeed = 5f; // Added movement speed
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private Transform feetPos;
     [SerializeField] private float groundDistance = 0.25f;
     [SerializeField] private float jumpTime = 0.3f;
 
-    private bool isGrounded = false;
-    private bool isJumping = false;
+    private bool isGrounded=false;
+    private bool isJumping=false;
     private float jumpTimer;
 
     private void Update()
     {
         isGrounded = Physics2D.OverlapCircle(feetPos.position, groundDistance, groundLayer);
 
-        float horizontalInput = Input.GetAxis("Horizontal"); // Get horizontal input
-
-        // Handle horizontal movement
-        rb.velocity = new Vector2(horizontalInput * moveSpeed, rb.velocity.y);
-
-        if (isGrounded && Input.GetButtonDown("Jump"))
+        if(isGrounded && Input.GetButtonDown("Jump"))
         {
             isJumping = true;
             rb.velocity = Vector2.up * jumpForce;
@@ -35,7 +29,7 @@ public class CharacterController : MonoBehaviour
         {
             if (jumpTimer < jumpTime)
             {
-                rb.velocity = new Vector2(horizontalInput * moveSpeed, jumpForce);
+                rb.velocity = Vector2.up * jumpForce;
 
                 jumpTimer += Time.deltaTime;
             }
@@ -47,8 +41,9 @@ public class CharacterController : MonoBehaviour
 
         if (Input.GetButtonUp("Jump"))
         {
-            isJumping = false;
+            isJumping= false;
             jumpTimer = 0;
         }
     }
+
 }
