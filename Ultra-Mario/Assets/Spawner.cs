@@ -5,36 +5,36 @@ using UnityEngine;
 public class Spawner : MonoBehaviour
 {
     [SerializeField] private GameObject[] obstaclePrefabs;
-    public float obstacleSpawnInterval = 2f;
     public float obstacleSpeed = 1f;
+    public int obstaclesPerBatch = 5;
+    public float batchDistance = 5f;
+    public Transform selectionIcon; // Reference to your selection icon GameObject
 
-    private float timeUntilObstacleSpawn;
-
-    private void Update()
+    private void Start()
     {
-        SpawnLoop();
+        SpawnBatches();
     }
 
-    private void SpawnLoop()
+    private void SpawnBatches()
     {
-        timeUntilObstacleSpawn += Time.deltaTime;
-
-        if (timeUntilObstacleSpawn >= obstacleSpawnInterval)
+        if (selectionIcon == null)
         {
-            Spawn();
-            timeUntilObstacleSpawn = 0f;
+            Debug.LogError("Selection Icon is not assigned. Please assign it in the Inspector.");
+            return;
+        }
+
+        Vector3 spawnPosition = selectionIcon.position;
+
+        for (int i = 0; i < obstaclesPerBatch; i++)
+        {
+            Spawn(spawnPosition);
+            spawnPosition.x += batchDistance; // Increase the X position for the next obstacle
         }
     }
 
-    private void Spawn()
+    private void Spawn(Vector3 spawnPosition)
     {
         GameObject obstacleToSpawn = obstaclePrefabs[Random.Range(0, obstaclePrefabs.Length)];
-
-        // Calculate a random position within the screen's boundaries
-        float randomX = Random.Range(-5f, 5f); // Adjust the range as needed
-        float randomY = Random.Range(-3f, 3f); // Adjust the range as needed
-
-        Vector3 spawnPosition = new Vector3(randomX, randomY, 0f);
 
         GameObject spawnedObstacle = Instantiate(obstacleToSpawn, spawnPosition, Quaternion.identity);
 
