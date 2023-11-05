@@ -8,7 +8,7 @@ public class PlayerMovement : MonoBehaviour
     public float jumpForce = 10.0f;
     public AudioClip jumpSound; // The jump sound to be played
     public AudioClip deathSound; // The sound to play when colliding with "Gumba"
-
+    public AudioClip coinCollectSound; // The sound to play when collecting a coin
     private Rigidbody2D rb;
     private bool isGrounded;
     private AudioSource audioSource; // Reference to the AudioSource component
@@ -16,7 +16,7 @@ public class PlayerMovement : MonoBehaviour
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        audioSource = GetComponent < AudioSource>(); // Initialize the AudioSource component
+        audioSource = GetComponent<AudioSource>(); // Initialize the AudioSource component
     }
 
     private void Update()
@@ -56,11 +56,28 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    // Detect collisions with GameObjects tagged as "Coin"
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Coin"))
+        {
+            PlayCoinCollectSound();
+        }
+    }
+
     private void PlayDeathSound()
     {
         if (deathSound != null)
         {
             audioSource.PlayOneShot(deathSound);
+        }
+    }
+
+    private void PlayCoinCollectSound()
+    {
+        if (coinCollectSound != null)
+        {
+            audioSource.PlayOneShot(coinCollectSound);
         }
     }
 }

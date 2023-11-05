@@ -5,30 +5,24 @@ using UnityEngine;
 public class GumbaMovement : MonoBehaviour
 {
     public float moveSpeed = 2.0f;
-    public Transform leftBoundary;
-    public Transform rightBoundary;
+    public float moveDistance = 8.0f; // The distance Gumba should move to the left and right
 
-    private bool movingRight = true;
+    private int direction = 1; // 1 for right, -1 for left
+    private Vector3 originalPosition;
+
+    private void Start()
+    {
+        originalPosition = transform.position;
+    }
 
     private void Update()
     {
-        if (movingRight)
-        {
-            transform.Translate(Vector3.right * moveSpeed * Time.deltaTime);
-        }
-        else
-        {
-            transform.Translate(Vector3.left * moveSpeed * Time.deltaTime);
-        }
+        transform.Translate(Vector3.right * direction * moveSpeed * Time.deltaTime);
 
-        // Check if Gumba reached its left or right boundary
-        if (transform.position.x >= rightBoundary.position.x)
+        // Check if Gumba reached the desired distance to change direction
+        if (Mathf.Abs(transform.position.x - originalPosition.x) >= moveDistance)
         {
-            movingRight = false;
-        }
-        else if (transform.position.x <= leftBoundary.position.x)
-        {
-            movingRight = true;
+            direction = -direction; // Change direction
         }
     }
 
@@ -36,8 +30,7 @@ public class GumbaMovement : MonoBehaviour
     {
         if (other.CompareTag("Pipe"))
         {
-            // Change direction when colliding with objects tagged as "Pipe"
-            movingRight = !movingRight;
+            direction = -direction; // Change direction when colliding with objects tagged as "Pipe"
         }
     }
 }
