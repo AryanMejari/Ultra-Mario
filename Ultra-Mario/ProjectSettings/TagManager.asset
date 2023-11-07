@@ -9,6 +9,7 @@ TagManager:
   - g(Clone)
   - pipe(Clone)
   - Block(Clone)
+  - Point
   layers:
   - Default
   - TransparentFX
