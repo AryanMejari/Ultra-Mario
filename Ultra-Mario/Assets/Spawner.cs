@@ -34,11 +34,14 @@ public class Spawner : MonoBehaviour
 
     private void Spawn(Vector3 spawnPosition)
     {
+        // Select a random obstacle prefab
         GameObject obstacleToSpawn = obstaclePrefabs[Random.Range(0, obstaclePrefabs.Length)];
 
+        // Instantiate the obstacle without the rigidbody component
         GameObject spawnedObstacle = Instantiate(obstacleToSpawn, spawnPosition, Quaternion.identity);
+        Destroy(spawnedObstacle.GetComponent<Rigidbody2D>()); // Remove the rigidbody component
 
-        Rigidbody2D obstacleRB = spawnedObstacle.GetComponent<Rigidbody2D>();
-        obstacleRB.velocity = Vector2.left * obstacleSpeed;
+        // Set the obstacle's velocity directly instead of using the rigidbody
+        spawnedObstacle.GetComponent<Transform>().Translate(Vector2.left * obstacleSpeed * Time.deltaTime);
     }
 }

@@ -21,8 +21,8 @@ public class PlayerMovement : MonoBehaviour
 
     private void Start()
     {
-        rb = GetComponent < Rigidbody2D>();
-        audioSource = GetComponent < AudioSource>();
+        rb = GetComponent<Rigidbody2D>();
+        audioSource = GetComponent<AudioSource>();
         UpdatePointsText();
     }
 
@@ -34,12 +34,17 @@ public class PlayerMovement : MonoBehaviour
         Vector2 movement = new Vector2(moveHorizontal, 0.0f) * moveSpeed;
         rb.velocity = new Vector2(movement.x, rb.velocity.y);
 
-        isGrounded = transform.position.y <= 0.1f;
+        CheckGroundedStatus(); // Added to check if the player is grounded
 
         if (isGrounded && Input.GetButtonDown("Jump"))
         {
             Jump();
         }
+    }
+
+    private void CheckGroundedStatus()
+    {
+        isGrounded = transform.position.y <= 0.1f; // Check if the player's y-position is close to the ground
     }
 
     private void Jump()
@@ -115,3 +120,4 @@ public class PlayerMovement : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }
+
