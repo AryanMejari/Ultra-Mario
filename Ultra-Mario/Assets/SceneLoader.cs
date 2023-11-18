@@ -3,17 +3,14 @@ using UnityEngine.SceneManagement;
 
 public class SceneLoader : MonoBehaviour
 {
-    public void LoadLeveScene()
+    public void LoadLevelScene()
     {
-        SceneManager.LoadScene("level");
+        SceneManager.LoadScene("Level 1");
     }
 
-    public void ExitScene()
+    public void ReloadCurrentScene()
     {
-        // Get the name of the current scene
         string currentSceneName = SceneManager.GetActiveScene().name;
-
-        // Load the current scene, effectively restarting it
         SceneManager.LoadScene(currentSceneName);
     }
 }
