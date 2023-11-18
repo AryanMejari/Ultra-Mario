@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 8992087764902340189}
   - component: {fileID: 8780122922121688804}
   - component: {fileID: 9202709743638976357}
-  - component: {fileID: 4217669551302846757}
   - component: {fileID: 1260462031683761979}
   m_Layer: 0
   m_Name: Coins
@@ -108,18 +107,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &4217669551302846757
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6068219670520006672}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4c6855f8cfedb494f8252a8088dae83e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!58 &1260462031683761979
 CircleCollider2D:
   m_ObjectHideFlags: 0
