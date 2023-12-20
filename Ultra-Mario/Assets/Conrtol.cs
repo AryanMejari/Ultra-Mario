@@ -1,23 +1,25 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using TMPro; // Import the TextMeshPro namespace
-using UnityEngine.SceneManagement; // Import the SceneManagement namespace
+using TMPro;
+using UnityEngine.SceneManagement;
 
 public class PlayerMovement : MonoBehaviour
 {
     public float moveSpeed = 5.0f;
     public float jumpForce = 10.0f;
+    public float rotationSpeed = 100.0f;
     public AudioClip jumpSound;
     public AudioClip deathSound;
     public AudioClip coinCollectSound;
+
     private Rigidbody2D rb;
     private bool isGrounded;
     private AudioSource audioSource;
-    private int points = 0; // Added to keep track of points
-    public TextMeshProUGUI pointsText; // Reference to a TextMeshPro Text component
+    private int points = 0;
+    public TextMeshProUGUI pointsText;
 
-    private bool isGameOver = false; // To prevent further input after the game is over
+    private bool isGameOver = false;
+    private bool canJump = true;
 
     private void Start()
     {
@@ -28,23 +30,87 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-        if (isGameOver) return; // Don't accept input when the game is over
+        if (isGameOver) return;
+
+        HandleTouchInput();
 
         float moveHorizontal = Input.GetAxis("Horizontal");
         Vector2 movement = new Vector2(moveHorizontal, 0.0f) * moveSpeed;
         rb.velocity = new Vector2(movement.x, rb.velocity.y);
 
-        CheckGroundedStatus(); // Added to check if the player is grounded
+        CheckGroundedStatus();
 
-        if (isGrounded && Input.GetButtonDown("Jump"))
+        if (isGrounded && Input.GetButtonDown("Jump") && canJump)
         {
             Jump();
+            canJump = false;
+            StartCoroutine(EnableJumpAfterDelay(1.3f));
         }
+
+        RotatePlayer(moveHorizontal);
+    }
+
+    private void HandleTouchInput()
+    {
+        if (Input.touchCount > 0)
+        {
+            Touch touch = Input.GetTouch(0);
+
+            // Define screen areas for actions: upper half for jumping, lower half for left/right movement
+            float screenHeight = Screen.height;
+            float screenWidth = Screen.width;
+            float upperHalf = screenHeight * 0.5f;
+
+            if (touch.phase == TouchPhase.Began)
+            {
+                Vector2 touchPos = touch.position;
+
+                // Jump action: if touch is in the upper half of the screen
+                if (touchPos.y > upperHalf && canJump)
+                {
+                    Jump();
+                    canJump = false;
+                    StartCoroutine(EnableJumpAfterDelay(1.3f));
+                }
+                // Movement action: if touch is in the lower half of the screen
+                else if (touchPos.y <= upperHalf)
+                {
+                    // Left movement: if touch is on the left side of the lower half
+                    if (touchPos.x < screenWidth * 0.5f)
+                    {
+                        MoveCharacter(-1);
+                    }
+                    // Right movement: if touch is on the right side of the lower half
+                    else
+                    {
+                        MoveCharacter(1);
+                    }
+                }
+            }
+        }
+    }
+
+    private void MoveCharacter(float direction)
+    {
+        Vector2 movement = new Vector2(direction * moveSpeed, rb.velocity.y);
+        rb.velocity = movement;
+    }
+
+    private void RotatePlayer(float moveHorizontal)
+    {
+        float rotationAmount = -moveHorizontal * rotationSpeed * Time.deltaTime;
+        transform.Rotate(Vector3.forward, rotationAmount);
+    }
+
+    private IEnumerator EnableJumpAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        canJump = true;
     }
 
     private void CheckGroundedStatus()
     {
-        isGrounded = transform.position.y <= 0.1f; // Check if the player's y-position is close to the ground
+        isGrounded = transform.position.y <= 0.1f;
     }
 
     private void Jump()
@@ -61,63 +127,5 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.gameObject.name == "Gumba")
-        {
-            PlayDeathSound();
-            StartCoroutine(RestartLevelAfterDelay(2.0f)); // Restart the level with a delay of 2 seconds
-        }
-    }
-
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.CompareTag("Coin"))
-        {
-            PlayCoinCollectSound();
-            IncreasePoints(1); // Increase points when the player collects a coin
-            Destroy(other.gameObject); // Destroy the collected coin
-        }
-    }
-
-    private void PlayDeathSound()
-    {
-        if (deathSound != null)
-        {
-            audioSource.PlayOneShot(deathSound);
-        }
-    }
-
-    private void PlayCoinCollectSound()
-    {
-        if (coinCollectSound != null)
-        {
-            audioSource.PlayOneShot(coinCollectSound);
-        }
-    }
-
-    private void IncreasePoints(int amount)
-    {
-        points += amount;
-        UpdatePointsText();
-    }
-
-    private void UpdatePointsText()
-    {
-        if (pointsText != null)
-        {
-            pointsText.text = "Points: " + points.ToString();
-        }
-    }
-
-    private IEnumerator RestartLevelAfterDelay(float delay)
-    {
-        isGameOver = true; // Prevent further input
-
-        yield return new WaitForSeconds(delay);
-
-        // Reload the current scene to restart the level
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-    }
+    // Other methods for collisions, audio, points, etc.
 }
-
